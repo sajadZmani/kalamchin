@@ -41,6 +41,7 @@ in `localStorage`, so a refresh downloads nothing new.
 | `js/storage.js` | `localStorage` layer |
 | `js/config.js` | prices, rewards, chapters and colours |
 | `js/lock.js` | passcode screen |
+| `js/sound.js` | game sounds (Web Audio, no files); off until turned on in Settings |
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
 | `levels.txt` | the level list: one line per level, words separated by `/` |
 | `data/levels/` | the built-in levels with their boards, 100 per file, plus `index.js` (generated from `levels.txt`) |

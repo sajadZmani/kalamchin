@@ -180,12 +180,13 @@
         if (i < 0) return;
         this.dragging = true;
         this.selected = [i];
+        root.KSound.play('letter', 0);
       } else if (type === 'move') {
         if (!this.dragging) return;
         var j = this.letterAt(x, y);
         if (j >= 0) {
           var at = this.selected.indexOf(j);
-          if (at < 0) this.selected.push(j);
+          if (at < 0) { this.selected.push(j); root.KSound.play('letter', this.selected.length - 1); }
           else if (at === this.selected.length - 2) this.selected.pop(); // slide back to undo
         }
       } else {
@@ -226,6 +227,7 @@
     },
 
     showResult: function (word, state) {
+      root.KSound.play({ ok: 'found', extra: 'extra', bad: 'wrong', dup: 'again' }[state]);
       var p = $('preview');
       p.textContent = word;
       p.className = 'show ' + state;
@@ -269,6 +271,7 @@
         if (st.extraMeter >= C.EXTRA_GOAL) {
           st.extraMeter = 0;
           st.coins += C.EXTRA_REWARD;
+          root.KSound.play('coins');
           root.KApp.toast('کلمات اضافه کامل شد! ' + fa(C.EXTRA_REWARD) + ' سکه جایزه');
         } else {
           root.KApp.toast('کلمه اضافه!');
@@ -310,6 +313,7 @@
     },
 
     revealCell: function (k) {
+      root.KSound.play('hint');
       this.progress.revealed.push(k);
       this.afterReveal();
     },
@@ -354,6 +358,7 @@
       var old = this.letters.join('');
       if (new Set(this.letters).size < 2) return;
       do { root.KLayout.shuffle(this.letters, Math.random); } while (this.letters.join('') === old);
+      root.KSound.play('shuffle');
       this.selected = [];
       this.renderWheel();
     },
@@ -393,6 +398,7 @@
       S.saveState(st);
       S.clearProgress(lv.id);
       root.KApp.renderCoins();
+      root.KSound.play('win');
       if (this.onComplete) this.onComplete({ level: lv, reward: reward, chapterDone: chapterDone, extras: this.progress.extras.length });
     },
 

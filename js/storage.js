@@ -4,6 +4,7 @@
  *   kalamchin.custom    levels made by the player
  *   kalamchin.state     coins, current level, finished levels, extra-word meter
  *   kalamchin.progress  unfinished levels: {levelId: {found words, hinted cells, extras}}
+ *   kalamchin.settings  preferences such as sound (off unless the player turns it on)
  */
 (function (root) {
   'use strict';
@@ -135,6 +136,18 @@
     },
 
     saveState: function (st) { write('state', st); },
+
+    // Player preferences (sound...). Kept apart from state so starting over keeps them.
+    setting: function (name, fallback) {
+      var s = read('settings', {});
+      return name in s ? s[name] : fallback;
+    },
+
+    saveSetting: function (name, value) {
+      var s = read('settings', {});
+      s[name] = value;
+      write('settings', s);
+    },
 
     // Progress is kept per level, so replaying an old level does not wipe the current one.
     progress: function (levelId) {

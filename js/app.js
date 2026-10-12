@@ -125,10 +125,17 @@
       var html = '<h2>تنظیمات</h2>' +
         '<p class="muted">همه چیز فقط در همین مرورگر ذخیره می‌شود.</p>' +
         '<p>مراحل تمام‌شده: ' + fa(Object.keys(st.done).length) + ' · کلمات اضافه: ' + fa(st.extraTotal) + '</p>' +
+        '<button class="toggle' + (root.KSound.enabled() ? ' on' : '') + '" data-act="sound" role="switch" aria-checked="' + root.KSound.enabled() + '">' +
+        '<span>صدا</span><b>' + (root.KSound.enabled() ? 'روشن' : 'خاموش') + '</b><i></i></button>' +
         '<a class="btn ghost" href="editor.html">ساخت و مدیریت مراحل</a>' +
         '<button class="btn danger" data-act="reset">شروع دوباره بازی</button>' +
         '<button class="btn" data-close>بستن</button>';
       App.modal(html, function (act) {
+        if (act === 'sound') {
+          root.KSound.set(!root.KSound.enabled());
+          App.settings(); // redraw the switch
+          return;
+        }
         if (act === 'reset') {
           if (!confirm('همه سکه‌ها و پیشرفت پاک شود؟')) return;
           S.resetAll();
