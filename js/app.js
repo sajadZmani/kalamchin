@@ -37,7 +37,7 @@
     /* ---------- home ---------- */
 
     home: function () {
-      var st = S.state(), total = S.builtIn().length;
+      var st = S.state(), total = S.total();
       var cur = Math.min(st.current, total);
       var ch = C.chapterOf(cur);
       $('play-level').textContent = st.current > total ? 'همه مراحل تمام شد!' : ch.name + ' · مرحله ' + fa(cur);
@@ -51,34 +51,38 @@
 
     play: function (id) {
       App.closeModal();
-      App.show('game');
-      if (!G.start(id)) { App.toast('این مرحله پیدا نشد'); App.home(); return; }
-      history.replaceState(null, '', '#play=' + id);
+      // The level's file may still need downloading (100 levels per file).
+      S.loadLevel(id, function (level) {
+        if (!level) { App.toast('بارگذاری مرحله ممکن نشد؛ اینترنت را بررسی کنید'); App.home(); return; }
+        App.show('game');
+        G.start(id);
+        history.replaceState(null, '', '#play=' + id);
+      });
     },
 
     playCurrent: function () {
-      var st = S.state(), total = S.builtIn().length;
+      var st = S.state(), total = S.total();
       App.play(Math.min(st.current, total));
     },
 
     /* ---------- level map ---------- */
 
     map: function () {
-      var st = S.state(), levels = S.builtIn(), per = C.LEVELS_PER_CHAPTER;
+      var st = S.state(), total = S.total(), per = C.LEVELS_PER_CHAPTER;
       var html = '';
-      for (var start = 0; start < levels.length; start += per) {
-        var ch = C.chapterOf(levels[start].id);
+      for (var start = 0; start < total; start += per) {
+        var ch = C.chapterOf(start + 1);
         var done = 0, cells = '';
-        for (var i = start; i < Math.min(start + per, levels.length); i++) {
-          var id = levels[i].id, cls = 'lvl';
+        for (var i = start; i < Math.min(start + per, total); i++) {
+          var id = i + 1, cls = 'lvl';
           if (st.done[id]) { cls += ' done'; done++; }
           else if (id === st.current) cls += ' current';
           else if (id > st.current) cls += ' locked';
           cells += '<button class="' + cls + '" data-level="' + id + '"' + (id > st.current ? ' disabled' : '') + '>' + fa(id) + '</button>';
         }
-        var locked = levels[start].id > st.current;
+        var locked = start + 1 > st.current;
         html += '<div class="chapter' + (locked ? ' locked' : '') + '" style="--accent:' + ch.accent + ';--bg1:' + ch.bg1 + ';--bg2:' + ch.bg2 + '">' +
-          '<div class="chapter-head"><b>' + ch.name + '</b><span>' + fa(done) + ' از ' + fa(Math.min(per, levels.length - start)) + '</span></div>' +
+          '<div class="chapter-head"><b>' + ch.name + '</b><span>' + fa(done) + ' از ' + fa(Math.min(per, total - start)) + '</span></div>' +
           '<div class="chapter-levels">' + cells + '</div></div>';
       }
       var custom = S.custom();
@@ -101,7 +105,7 @@
     /* ---------- popups ---------- */
 
     complete: function (res) {
-      var lv = res.level, custom = S.isCustomId(lv.id), total = S.builtIn().length;
+      var lv = res.level, custom = S.isCustomId(lv.id), total = S.total();
       var hasNext = !custom && lv.id < total;
       var html = '<div class="win-title">آفرین!</div>' +
         '<p>' + (custom ? 'مرحله «' + (lv.name || 'من') + '» تمام شد.' : 'مرحله ' + fa(lv.id) + ' تمام شد.') + '</p>' +
@@ -145,8 +149,9 @@
         '<button class="btn" data-close>فهمیدم</button>');
     },
 
-    init: function () {
-      S.init();
+    init: function () { S.init(App.start); },
+
+    start: function () {
       G.bind();
       G.onComplete = App.complete;
       $('play-btn').addEventListener('click', App.playCurrent);
@@ -165,7 +170,8 @@
         if (a && App.modalClick) App.modalClick(a.dataset.act);
       });
       var m = /#play=(\d+)/.exec(location.hash);
-      if (m && S.level(+m[1]) && (S.isCustomId(+m[1]) || +m[1] <= S.state().current)) App.play(+m[1]);
+      var want = m ? +m[1] : 0;
+      if (S.isCustomId(want) ? S.level(want) : want >= 1 && want <= Math.min(S.state().current, S.total())) App.play(want);
       else App.home();
       if (!S.state().seenHelp) {
         var st = S.state(); st.seenHelp = true; S.saveState(st);

@@ -18,7 +18,9 @@ No build step. Locally, either open `index.html` in a browser or serve the folde
 (`python3 -m http.server`) and open `http://localhost:8000`.
 
 Everything (levels, current level, coins, progress) is saved in the browser's `localStorage`,
-so every friend has their own progress.
+so every friend has their own progress. Levels come in files of 100: a player downloads a file
+only when they reach it (the next one is fetched near the end of the current one), and keeps it
+in `localStorage`, so a refresh downloads nothing new.
 
 ### Hosting on GitHub Pages
 
@@ -41,7 +43,7 @@ so every friend has their own progress.
 | `js/lock.js` | passcode screen |
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
 | `levels.txt` | the level list: one line per level, words separated by `/` |
-| `data/levels.js` | the built-in levels with their boards (generated from `levels.txt`) |
+| `data/levels/` | the built-in levels with their boards, 100 per file, plus `index.js` (generated from `levels.txt`) |
 | `data/dict.js` | accepted words for extra words (generated) |
 | `tools/` | scripts that build `data/`, word blocklist |
 | `PLAN.md` | research notes and the build plan |
@@ -54,11 +56,12 @@ Edit `levels.txt` (one line per level: `مرحله‌ی N`, a tab, then the word
 node tools/import_levels.js
 ```
 
-It builds a crossword for every level, puts every letter the words need on the wheel, and adds the
-words to the extra-word dictionary. آ and ا count as the same letter. Typos and words typed
-together in the source list are fixed per level in `FIXES` at the top of `tools/import_levels.js`.
-Bump `LEVELS_VERSION` there whenever the levels change, so browsers that already played replace
-their stored copy (coins, current level and custom levels are kept).
+It builds a crossword for every level, puts every letter the words need on the wheel, writes
+`data/levels/` and adds the words to the extra-word dictionary. آ and ا count as the same letter.
+Typos and words typed together in the source list are fixed per level in `FIXES` at the top of
+`tools/import_levels.js`. Each file's fingerprint is in `data/levels/index.js`, so browsers that
+already played download again only the files whose levels changed (coins, current level and
+custom levels are kept).
 
 Words in `tools/blocked_words.txt` (swearing, sexual words, insults, drugs, alcohol) are dropped
 from the levels and never accepted as extra words; some players are kids.

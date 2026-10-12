@@ -221,7 +221,10 @@
   }
 
   function init() {
-    S.init();
+    S.init(start);
+  }
+
+  function start() {
     renderList();
     $('b-suggest').addEventListener('click', suggest);
     $('suggest').addEventListener('click', function (e) {
@@ -241,10 +244,6 @@
       var custom = S.custom();
       if (!custom.length) { toast('مرحله‌ای برای خروجی نیست'); return; }
       download('kalamchin-my-levels.json', { app: 'kalamchin', custom: custom });
-    });
-    $('b-export-all').addEventListener('click', function () {
-      var all = S.levels();
-      download('kalamchin-all-levels.json', { app: 'kalamchin', version: all.version, levels: all.levels, custom: all.custom || [] });
     });
     $('b-import').addEventListener('click', function () { $('f-file').click(); });
     $('f-file').addEventListener('change', function () {

@@ -389,8 +389,7 @@
         if (!custom && lv.id % C.LEVELS_PER_CHAPTER === 0) { reward += C.CHAPTER_REWARD; chapterDone = true; }
         st.coins += reward;
       }
-      var builtIn = S.builtIn();
-      if (!custom && lv.id >= st.current) st.current = Math.min(lv.id + 1, builtIn.length + 1);
+      if (!custom && lv.id >= st.current) st.current = Math.min(lv.id + 1, S.total() + 1);
       S.saveState(st);
       S.clearProgress(lv.id);
       root.KApp.renderCoins();
