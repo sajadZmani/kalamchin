@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#3a1c71">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>کلمچین</title>
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18.5 2.5v4.6h-4.6M5.5 21.5v-4.6h4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-finger" viewBox="0 0 24 24"><path d="M9 11V5a1.8 1.8 0 0 1 3.6 0v5.5M12.6 10.5V9.2a1.8 1.8 0 0 1 3.6 0v2M16.2 11.2a1.8 1.8 0 0 1 3.4.8v3c0 3.9-2.7 6.5-6.4 6.5h-1c-2.4 0-3.8-1-5-2.7l-2.6-3.7a1.7 1.7 0 0 1 2.7-2.1L9 14.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><path d="M9.2 9a3 3 0 1 1 4.3 2.7c-.9.5-1.5 1.2-1.5 2.3v.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="18.5" r="1.4" fill="currentColor"/></symbol>
+      <symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="app">
+    <!-- Home -->
+    <section id="home" class="screen themed">
+      <header class="topbar">
+        <button id="settings-btn" class="icon-btn" aria-label="تنظیمات"><svg><use href="#i-gear"/></svg></button>
+        <button id="help-btn" class="icon-btn" aria-label="راهنما"><svg><use href="#i-help"/></svg></button>
+        <div class="spacer"></div>
+        <div class="coins"><i class="coin"></i><span class="coins-value">۰</span></div>
+      </header>
+      <div class="home-body">
+        <div class="logo">
+          <div class="logo-tiles"><span>ک</span><span>ل</span><span>م</span><span>چ</span><span>ی</span><span>ن</span></div>
+          <h1>کلمچین</h1>
+          <p>بازی کلمه‌سازی</p>
+        </div>
+        <button id="play-btn" class="play-btn">
+          <b>بازی</b>
+          <small id="play-level"></small>
+        </button>
+        <button id="map-btn" class="btn ghost wide"><svg><use href="#i-map"/></svg> مراحل</button>
+      </div>
+    </section>
+
+    <!-- Level map -->
+    <section id="map" class="screen hidden">
+      <header class="topbar">
+        <button id="map-back" class="icon-btn" aria-label="بازگشت"><svg><use href="#i-back"/></svg></button>
+        <div class="title">مراحل</div>
+        <div class="coins"><i class="coin"></i><span class="coins-value">۰</span></div>
+      </header>
+      <div id="chapters"></div>
+    </section>
+
+    <!-- Game -->
+    <section id="game" class="screen themed hidden">
+      <header class="topbar">
+        <button id="game-back" class="icon-btn" aria-label="بازگشت"><svg><use href="#i-back"/></svg></button>
+        <div id="game-title" class="title"></div>
+        <div class="coins"><i class="coin"></i><span class="coins-value">۰</span></div>
+      </header>
+      <div id="board-wrap"><div id="board"></div></div>
+      <div id="preview"></div>
+      <div id="controls">
+        <div class="side">
+          <button id="btn-shuffle" class="round-btn" aria-label="چرخش حروف"><svg><use href="#i-shuffle"/></svg></button>
+          <button id="btn-extra" class="round-btn extra" aria-label="کلمات اضافه">
+            <span id="extra-fill" class="fill"></span>
+            <svg><use href="#i-book"/></svg>
+            <span id="extra-count" class="badge">۰</span>
+          </button>
+        </div>
+        <div id="wheel">
+          <svg id="wheel-line"></svg>
+        </div>
+        <div class="side">
+          <button id="btn-hint" class="round-btn" aria-label="راهنمایی حرف"><svg><use href="#i-bulb"/></svg><span class="cost"><i class="coin"></i><span id="hint-cost"></span></span></button>
+          <button id="btn-pick" class="round-btn" aria-label="باز کردن خانه دلخواه"><svg><use href="#i-finger"/></svg><span class="cost"><i class="coin"></i><span id="pick-cost"></span></span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal" class="hidden"><div id="modal-box"></div></div>
+  <div id="toast"></div>
+
+  <script src="data/levels.js"></script>
+  <script src="data/dict.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

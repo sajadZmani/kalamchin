@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مراحل من · کلمچین</title>
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html, body { height: auto; min-height: 100%; overflow: auto; user-select: text; -webkit-user-select: text; }
+    html { background: #2c3e50; }
+    body { background: linear-gradient(160deg, #2c3e50, #4ca1af) fixed; }
+    .page { max-width: 560px; margin: 0 auto; padding: 0 16px 40px; }
+    .panel { background: var(--panel); color: var(--ink); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+    .panel h2 { margin: 0 0 10px; font-size: 20px; }
+    label { display: block; font-weight: 700; margin: 10px 0 4px; }
+    input[type=text], textarea {
+      width: 100%; font: inherit; font-size: 18px; padding: 10px 12px;
+      border: 2px solid #e6d8c3; border-radius: 12px; background: #fff; color: var(--ink);
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { display: flex; gap: 8px; }
+    .row .btn { margin-top: 10px; }
+    .suggest { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .suggest button { background: #f1e6d6; border-radius: 10px; padding: 4px 10px; font-weight: 700; color: var(--ink); }
+    .suggest button.on { background: var(--accent); color: #fff; }
+    .hint { color: var(--muted); font-size: 14px; margin: 6px 0 0; line-height: 1.8; }
+    .err { color: var(--danger); font-weight: 700; }
+    #preview-board { display: grid; direction: rtl; justify-content: center; margin: 14px auto 4px; }
+    #preview-board .cell { background: var(--accent); color: #fff; border-radius: 6px; }
+    .item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid #efe3d1; }
+    .item:last-child { border: 0; }
+    .item .grow { flex: 1; min-width: 0; }
+    .item small { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mini { padding: 6px 12px; border-radius: 10px; font-weight: 700; background: #f1e6d6; color: var(--ink); text-decoration: none; font-size: 14px; }
+    .mini.play { background: var(--accent); color: #fff; }
+    .mini.del { background: #fbe1e1; color: var(--danger); }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+  <header class="topbar page" style="padding-left:0;padding-right:0">
+    <a href="index.html" class="icon-btn" aria-label="بازگشت"><svg><use href="#i-back"/></svg></a>
+    <div class="title">مراحل من</div>
+    <div style="width:42px"></div>
+  </header>
+
+  <main class="page">
+    <section class="panel">
+      <h2>ساخت مرحله جدید</h2>
+      <label for="f-name">نام مرحله (اختیاری)</label>
+      <input id="f-name" type="text" placeholder="مثلا: مرحله تولد سارا">
+      <label for="f-letters">حروف دایره</label>
+      <input id="f-letters" type="text" placeholder="مثلا: کتابی" maxlength="8">
+      <p class="hint">بین ۳ تا ۸ حرف. می‌توانید یک کلمه بلند بنویسید؛ حروفش حروف دایره می‌شوند.</p>
+      <div class="row">
+        <button id="b-suggest" class="btn ghost" style="background:#f1e6d6;color:var(--ink);box-shadow:none">پیشنهاد کلمه</button>
+      </div>
+      <div id="suggest" class="suggest"></div>
+      <label for="f-words">کلمات جدول (هر خط یک کلمه)</label>
+      <textarea id="f-words" placeholder="کتاب&#10;تاب&#10;بیت"></textarea>
+      <p id="msg" class="hint"></p>
+      <div id="preview-board"></div>
+      <div class="row">
+        <button id="b-preview" class="btn ghost" style="background:#f1e6d6;color:var(--ink);box-shadow:none">پیش‌نمایش جدول</button>
+        <button id="b-save" class="btn">ذخیره</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>مراحل ساخته شده</h2>
+      <div id="list"></div>
+    </section>
+
+    <section class="panel">
+      <h2>پشتیبان‌گیری</h2>
+      <p class="hint">مراحل فقط در همین مرورگر ذخیره می‌شوند. برای فرستادن به دوستان خروجی بگیرید و آن‌ها فایل را وارد کنند.</p>
+      <div class="row">
+        <button id="b-export" class="btn">خروجی مراحل من</button>
+        <button id="b-import" class="btn ghost" style="background:#f1e6d6;color:var(--ink);box-shadow:none">وارد کردن فایل</button>
+      </div>
+      <button id="b-export-all" class="btn ghost" style="background:#f1e6d6;color:var(--ink);box-shadow:none">خروجی همه مراحل بازی</button>
+      <input id="f-file" type="file" accept=".json,application/json" hidden>
+    </section>
+  </main>
+
+  <div id="modal" class="hidden"><div id="modal-box"></div></div>
+  <div id="toast"></div>
+
+  <script src="data/levels.js"></script>
+  <script src="data/dict.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/editor.js"></script>
+</body>
+</html>
