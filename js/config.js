@@ -1,8 +1,8 @@
 (function (root) {
   'use strict';
 
-  // Chapter themes: every chapter has 10 levels, a name and its own colours.
-  var CHAPTERS = [
+  // Chapter themes: a city name and its colours.
+  var THEMES = [
     ['تهران', '#f2994a', '#3a1c71', '#d76d77'],
     ['اصفهان', '#2d9cdb', '#0f3b57', '#2a7a9b'],
     ['شیراز', '#eb5757', '#4a1942', '#c0436b'],
@@ -33,8 +33,14 @@
     ['ایلام', '#44bd32', '#13361a', '#2f7d2f'],
     ['شهرکرد', '#8c7ae6', '#241d47', '#5b4ea0'],
     ['یاسوج', '#e84118', '#3e140b', '#963223']
-  ].map(function (c, i) {
-    return { index: i, name: c[0], accent: c[1], bg1: c[2], bg2: c[3] };
+  ];
+
+  // 100 chapters of 10 levels: the 30 cities above, then these, reusing the 30 colour sets.
+  var MORE_NAMES = ('نیشابور قم اراک ساوه کاشمر بم جیرفت رفسنجان سیرجان دزفول شوشتر آبادان خرمشهر بهبهان لاهیجان انزلی آستارا رامسر نوشهر چالوس بابل آمل بهشهر گنبد بجنورد قوچان گناباد فردوس طبس نایین اردکان میبد تفت نطنز خوانسار گلپایگان شهرضا کازرون جهرم فسا لار داراب آباده فیروزآباد مراغه مرند اهر میانه سراب خوی ماکو مهاباد بوکان سقز بانه مریوان پاوه کنگاور ملایر نهاوند بروجرد الیگودرز دامغان شاهرود سبزوار تربت‌جام چابهار میناب کنگان زابل').split(' ');
+  var NAMES = THEMES.map(function (t) { return t[0]; }).concat(MORE_NAMES);
+  var CHAPTERS = NAMES.map(function (name, i) {
+    var t = THEMES[i % THEMES.length];
+    return { index: i, name: name, accent: t[1], bg1: t[2], bg2: t[3] };
   });
 
   var CUSTOM_CHAPTER = { index: -1, name: 'مراحل من', accent: '#f2994a', bg1: '#2c3e50', bg2: '#4ca1af' };

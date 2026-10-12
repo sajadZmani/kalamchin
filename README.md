@@ -4,7 +4,7 @@ A Persian word game for the browser, inspired by Amirza (آمیرزا). Made for
 
 Drag across the letters in the wheel to build words and fill the crossword. Real words that
 are not on the board count as extra words; collect enough of them for bonus coins. Coins buy
-hints. There are 300 levels in 30 chapters, and you can make your own levels.
+hints. There are 1000 levels in 100 chapters, and you can make your own levels.
 
 ## Play
 
@@ -40,7 +40,7 @@ so every friend has their own progress.
 | `js/config.js` | prices, rewards, chapters and colours |
 | `js/lock.js` | passcode screen |
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
-| `data/levels.js` | the 300 built-in levels (generated) |
+| `data/levels.js` | the 1000 built-in levels (generated) |
 | `data/dict.js` | accepted words for extra words (generated) |
 | `tools/` | scripts that generate `data/` |
 | `PLAN.md` | research notes and the build plan |
@@ -54,7 +54,9 @@ python3 tools/extract_words.py hazm/data/words.dat wordfreq/data/small_fa.msgpac
 node tools/generate_levels.js wordlists.json
 ```
 
-If you change the built-in levels, bump `LEVELS_VERSION` in `tools/generate_levels.js` so that
+Levels 1–300 come from the first five tiers and 301–1000 from the mixed pools after them; the
+output is deterministic, so add new levels after the existing ones instead of changing earlier
+tiers (saved progress refers to level numbers). If you change the built-in levels, bump `LEVELS_VERSION` in `tools/generate_levels.js` so that
 browsers that already played replace their stored copy. Custom levels are kept.
 
 ## Credits
