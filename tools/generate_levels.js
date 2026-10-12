@@ -28,6 +28,15 @@ for (const [w, r] of src.targets) {
 for (const w of TWO) if (!rankOf.has(w)) rankOf.set(w, 5000);
 const targets = [...rankOf.keys()];
 
+// Word lists kept in tools/*.txt (see the comments in those files).
+function wordFile(name) {
+  return new Set(fs.readFileSync(path.join(__dirname, name), 'utf8').split('\n')
+    .filter((l) => !l.startsWith('#')).join(' ').split(/\s+/).filter(Boolean));
+}
+const BLOCKED = wordFile('blocked_words.txt');   // never accepted anywhere
+const NOT_ANSWER = wordFile('not_answers.txt');  // fine as extra words, never on the board
+const banned = (w) => BLOCKED.has(w) || NOT_ANSWER.has(w);
+
 const dict = new Set(src.dict);
 for (const w of targets) dict.add(w);
 
@@ -62,6 +71,37 @@ const usedSets = new Set();
 const levels = [];
 let seed = 7;
 
+// Builds one level around base, or returns null. nextSeed() is only called once a layout is tried.
+function tryBase(base, tier, nextSeed, rand, allowed) {
+  const avail = counts(base);
+  const subs = [];
+  for (let n = tier.minLen; n <= tier.letters; n++) {
+    for (const w of byLen[n] || []) if (w !== base && allowed(w) && fits(w, avail)) subs.push(w);
+  }
+  if (subs.length + 1 < tier.minWords) return null;
+  subs.sort((a, b) => rankOf.get(a) - rankOf.get(b));
+  let chosen = [base, ...subs.slice(0, tier.maxWords - 1)];
+  // Too many tiny words make boring boards; keep at most two 2-letter words.
+  let twos = 0;
+  chosen = chosen.filter((w) => w.length > 2 || ++twos <= 2);
+  if (chosen.length < tier.minWords) return null;
+  const lay = layout(chosen, { seed: nextSeed(), tries: 80, maxRows: 9, maxCols: 9 });
+  if (lay.words.length < tier.minWords) return null;
+  // Shuffle the wheel so the base word is not spelled in order.
+  let letters;
+  do { letters = shuffle([...base], rand); } while (letters.join('') === base && new Set(base).size > 1);
+  const common = lay.words.reduce((s, p) => s + Math.log(rankOf.get(p.w)), 0) / lay.words.length;
+  return {
+    letters: letters.join(''),
+    minLen: tier.minLen,
+    rows: lay.rows,
+    cols: lay.cols,
+    words: lay.words.map((p) => [p.w, p.r, p.c, p.d]),
+    _sort: lay.words.length * 10 + common,
+    _tier: tier,
+  };
+}
+
 // Builds up to tier.count levels with unused base words, easiest first.
 function makeTier(tier) {
   const rand = rng(1000 + tier.letters + (tier.salt || 0));
@@ -71,34 +111,11 @@ function makeTier(tier) {
     if (made.length >= tier.count) break;
     const key = [...base].sort().join('');
     if (usedBases.has(base) || usedSets.has(key)) continue;
-    const avail = counts(base);
-    const subs = [];
-    for (let n = tier.minLen; n <= tier.letters; n++) {
-      for (const w of byLen[n] || []) if (w !== base && fits(w, avail)) subs.push(w);
-    }
-    if (subs.length + 1 < tier.minWords) continue;
-    subs.sort((a, b) => rankOf.get(a) - rankOf.get(b));
-    let chosen = [base, ...subs.slice(0, tier.maxWords - 1)];
-    // Too many tiny words make boring boards; keep at most two 2-letter words.
-    let twos = 0;
-    chosen = chosen.filter((w) => w.length > 2 || ++twos <= 2);
-    if (chosen.length < tier.minWords) continue;
-    const lay = layout(chosen, { seed: seed++, tries: 80, maxRows: 9, maxCols: 9 });
-    if (lay.words.length < tier.minWords) continue;
-    // Shuffle the wheel so the base word is not spelled in order.
-    let letters;
-    do { letters = shuffle([...base], rand); } while (letters.join('') === base && new Set(base).size > 1);
+    const level = tryBase(base, tier, () => seed++, rand, () => true);
+    if (!level) continue;
     usedBases.add(base);
     usedSets.add(key);
-    const common = lay.words.reduce((s, p) => s + Math.log(rankOf.get(p.w)), 0) / lay.words.length;
-    made.push({
-      letters: letters.join(''),
-      minLen: tier.minLen,
-      rows: lay.rows,
-      cols: lay.cols,
-      words: lay.words.map((p) => [p.w, p.r, p.c, p.d]),
-      _sort: lay.words.length * 10 + common,
-    });
+    made.push(level);
   }
   made.sort((a, b) => a._sort - b._sort);
   made.forEach((m) => { delete m._sort; });
@@ -126,15 +143,44 @@ while (Object.values(pools).some((p) => p.length)) {
   }
 }
 
+// Clean pass: a level that uses a word from tools/*.txt is rebuilt in the same slot, from the
+// same base word when that word is fine, otherwise from a new one. Other levels stay as they are.
+let rebuilt = 0, newBase = 0;
+levels.forEach((lv, i) => {
+  if (!lv.words.some((e) => banned(e[0]))) return;
+  const tier = lv._tier, base = lv.words[0][0];
+  const rand = rng(5000 + i);
+  let seedN = 90000 + i * 100;
+  const nextSeed = () => seedN++;
+  const allowed = (w) => !banned(w);
+  let fresh = !banned(base) && tryBase(base, tier, nextSeed, rand, allowed);
+  if (!fresh) {
+    usedBases.delete(base);
+    usedSets.delete([...base].sort().join(''));
+    for (const b of byLen[tier.letters]) {
+      const key = [...b].sort().join('');
+      if (rankOf.get(b) > tier.baseRank || banned(b) || usedBases.has(b) || usedSets.has(key)) continue;
+      fresh = tryBase(b, tier, nextSeed, rand, allowed);
+      if (fresh) { usedBases.add(b); usedSets.add(key); newBase++; break; }
+    }
+  }
+  if (!fresh) throw new Error('could not rebuild level ' + (i + 1));
+  delete fresh._sort;
+  levels[i] = fresh;
+  rebuilt++;
+});
+console.log('clean pass: rebuilt', rebuilt, 'levels,', newBase, 'with a new base word');
+levels.forEach((lv) => { delete lv._tier; });
+
 levels.forEach((lv, i) => { lv.id = i + 1; });
 
-const LEVELS_VERSION = 2; // bump when the built-in levels change
+const LEVELS_VERSION = 3; // bump when the built-in levels change
 fs.writeFileSync(path.join(ROOT, 'data/levels.js'),
   '// Generated by tools/generate_levels.js. Words: [word, row, col (from the right), "h"|"v"].\n' +
   'window.KALAMCHIN_SEED = {\n  version: ' + LEVELS_VERSION + ',\n  levels: [\n' +
   levels.map((lv) => '    ' + JSON.stringify(lv)).join(',\n') + '\n  ]\n};\n');
 
-const dictWords = [...dict].filter((w) => w.length >= 2 && w.length <= 7); // keeps most-common-first order
+const dictWords = [...dict].filter((w) => w.length >= 2 && w.length <= 7 && !BLOCKED.has(w)); // most common first
 fs.writeFileSync(path.join(ROOT, 'data/dict.js'),
   '// Generated by tools/generate_levels.js from hazm (MIT) and wordfreq (CC-BY-SA 4.0). Most common first.\n' +
   'window.KALAMCHIN_DICT = "' + dictWords.join(' ') + '";\n');

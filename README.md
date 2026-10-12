@@ -42,7 +42,7 @@ so every friend has their own progress.
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
 | `data/levels.js` | the 1000 built-in levels (generated) |
 | `data/dict.js` | accepted words for extra words (generated) |
-| `tools/` | scripts that generate `data/` |
+| `tools/` | scripts that generate `data/`, word blocklists |
 | `PLAN.md` | research notes and the build plan |
 
 ## Regenerating the levels
@@ -58,6 +58,17 @@ Levels 1–300 come from the first five tiers and 301–1000 from the mixed pool
 output is deterministic, so add new levels after the existing ones instead of changing earlier
 tiers (saved progress refers to level numbers). If you change the built-in levels, bump `LEVELS_VERSION` in `tools/generate_levels.js` so that
 browsers that already played replace their stored copy. Custom levels are kept.
+
+## Word lists (kid-friendly)
+
+- `tools/blocked_words.txt`: never accepted, not on the board and not as an extra word
+  (swearing, sexual words, insults, drugs, alcohol).
+- `tools/not_answers.txt`: accepted as extra words but never used on the board (names of people,
+  places and brands, plus grim words like اعدام).
+
+Every answer word in the 1000 levels was checked by hand. To remove a word, add it to one of the
+files and run the generator again: only the levels that used it are rebuilt, and in-progress
+saves on those levels drop the words that no longer exist.
 
 ## Credits
 

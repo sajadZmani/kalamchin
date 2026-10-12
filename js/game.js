@@ -48,6 +48,10 @@
       // First unfinished word for the letter hint: reading order (top first, then right first).
       this.hintOrder = level.words.slice().sort(function (a, b) { return a[1] - b[1] || a[2] - b[2]; })
         .map(function (e) { return e[0]; });
+      // Saved progress may come from an older version of this level; drop what no longer fits.
+      var pr = this.progress;
+      pr.found = pr.found.filter(function (w) { return self.wordCells[w]; });
+      pr.revealed = pr.revealed.filter(function (k) { return self.cellLetter[k]; });
       S.saveProgress(this.progress);
       this.applyTheme();
       this.renderTitle();
