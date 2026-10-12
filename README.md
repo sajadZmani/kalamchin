@@ -78,5 +78,4 @@ node tools/import_levels.js
 - Word data: [hazm](https://github.com/roshan-research/hazm) (MIT) and
   [wordfreq](https://github.com/rspeer/wordfreq) (data CC-BY-SA 4.0).
 - Font: [Vazirmatn](https://github.com/rastikerdar/vazirmatn) (SIL OFL 1.1, see `fonts/OFL.txt`).
-- Level answers: the Amirza answer guide on [Digikala Mag](https://www.digikala.com/mag/complete-amirza-guide/).
 - Game idea: Amirza. This is an unofficial fan project and is not affiliated with it.
