@@ -175,5 +175,5 @@
   };
 
   root.KApp = App;
-  document.addEventListener('DOMContentLoaded', App.init);
+  root.KLock.ready(App.init);
 })(this);

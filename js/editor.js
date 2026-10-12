@@ -253,5 +253,5 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  root.KLock.ready(init);
 })(this);

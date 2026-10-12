@@ -451,3 +451,36 @@ svg { width: 24px; height: 24px; flex: none; }
   .round-btn { width: 46px; height: 46px; }
   .side { gap: 14px; }
 }
+
+/* ---------- passcode screen ---------- */
+
+html.locked body > *:not(#lock) { display: none !important; }
+#lock {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.07' stroke-width='1.5'%3E%3Cpath d='M40 6l9 25 25 9-25 9-9 25-9-25-25-9 25-9z'/%3E%3Cpath d='M40 18l16 6 6 16-6 16-16 6-16-6-6-16 6-16z'/%3E%3Ccircle cx='40' cy='40' r='6'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(160deg, #3a1c71, #d76d77);
+}
+.lock-box { text-align: center; width: min(100%, 300px); }
+.lock-title { font-size: 48px; font-weight: 900; text-shadow: 0 4px 0 rgba(0, 0, 0, 0.25); }
+.lock-box p { margin: 4px 0 18px; opacity: 0.9; font-size: 17px; }
+.lock-dots { display: flex; gap: 16px; justify-content: center; margin-bottom: 26px; direction: ltr; }
+.lock-dots i { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 2px #fff; }
+.lock-dots i.on { background: #fff; }
+.lock-dots.wrong { animation: shake 0.35s; }
+.lock-dots.wrong i.on { background: #ff8a8a; box-shadow: inset 0 0 0 2px #ff8a8a; }
+.lock-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; direction: ltr; }
+.lock-keys button {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+  font-size: 28px;
+  font-weight: 700;
+}
+.lock-keys button:active { background: rgba(255, 255, 255, 0.35); }

@@ -8,7 +8,11 @@ hints. There are 300 levels in 30 chapters, and you can make your own levels.
 
 ## Play
 
-Online (after GitHub Pages is on): **https://sajadzmani.github.io/Amirza/**
+Online (after GitHub Pages is on): **https://sajadzmani.github.io/kalamchin/**
+
+The game asks for a 4-digit passcode once per browser. It is set as `PASSCODE` in `js/lock.js`;
+changing it asks everyone for the new code. It only keeps casual visitors out: anyone who reads
+the source can find it.
 
 No build step. Locally, either open `index.html` in a browser or serve the folder
 (`python3 -m http.server`) and open `http://localhost:8000`.
@@ -22,7 +26,7 @@ so every friend has their own progress.
    Change visibility → Public (or use GitHub Pro to keep it private).
 2. Settings → Pages → Build and deployment → Source: **Deploy from a branch**, pick the branch
    with the game and the `/ (root)` folder, then Save.
-3. After a minute the game is live at `https://sajadzmani.github.io/Amirza/`. Every push to that
+3. After a minute the game is live at `https://sajadzmani.github.io/<repo name>/`. Every push to that
    branch updates it. `.nojekyll` makes GitHub serve the files as they are.
 
 ## Files
@@ -34,6 +38,7 @@ so every friend has their own progress.
 | `js/layout.js` | crossword layout engine (browser + Node) |
 | `js/storage.js` | `localStorage` layer |
 | `js/config.js` | prices, rewards, chapters and colours |
+| `js/lock.js` | passcode screen |
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
 | `data/levels.js` | the 300 built-in levels (generated) |
 | `data/dict.js` | accepted words for extra words (generated) |
