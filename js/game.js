@@ -5,8 +5,11 @@
   var C = root.KConfig, S = root.KStore, fa = C.fa;
   var DICT = null;
 
+  // آ and ا count as the same letter (the wheel may show either).
+  function norm(w) { return w.replace(/آ/g, 'ا'); }
+
   function dict() {
-    if (!DICT) DICT = new Set((root.KALAMCHIN_DICT || '').split(' '));
+    if (!DICT) DICT = new Set((root.KALAMCHIN_DICT || '').split(' ').map(norm));
     return DICT;
   }
 
@@ -46,6 +49,8 @@
         cells.forEach(function (k, i) { self.cellLetter[k] = e[0][i]; });
       });
       // First unfinished word for the letter hint: reading order (top first, then right first).
+      this.normToWord = {};
+      level.words.forEach(function (e) { self.normToWord[norm(e[0])] = e[0]; });
       this.hintOrder = level.words.slice().sort(function (a, b) { return a[1] - b[1] || a[2] - b[2]; })
         .map(function (e) { return e[0]; });
       // Saved progress may come from an older version of this level; drop what no longer fits.
@@ -133,6 +138,11 @@
       wheel.querySelectorAll('.letter').forEach(function (el) { el.remove(); });
       var size = wheel.clientWidth;
       var letterSize = Math.round(size * (n <= 4 ? 0.27 : n <= 5 ? 0.25 : n <= 6 ? 0.23 : 0.21));
+      if (n > 7) {
+        // Big wheels: shrink the letters so neighbours do not overlap.
+        var k = 0.9 * Math.sin(Math.PI / n);
+        letterSize = Math.min(letterSize, Math.round((0.88 * k * size) / (1 + k)));
+      }
       var radius = size / 2 - letterSize / 2 - size * 0.06;
       if (n === 1) radius = 0;
       this.letterPos = [];
@@ -226,11 +236,12 @@
     /* ---------- rules ---------- */
 
     submit: function () {
-      var word = this.currentWord();
+      var typed = this.currentWord();
       this.selected = [];
       this.drawLine(null);
-      if (word.length < 2) { this.updatePreview(); return; }
+      if (typed.length < 2) { this.updatePreview(); return; }
       var pr = this.progress;
+      var word = this.normToWord[norm(typed)] || typed;
       if (this.wordCells[word]) {
         if (pr.found.indexOf(word) >= 0) {
           this.showResult(word, 'dup');
@@ -243,7 +254,7 @@
         this.flashWord(word);
         return;
       }
-      if (word.length >= (this.level.minLen || 2) && dict().has(word)) {
+      if (word.length >= (this.level.minLen || 2) && dict().has(norm(word))) {
         if (pr.extras.indexOf(word) >= 0) {
           this.showResult(word, 'dup');
           root.KApp.toast('این کلمه اضافه را قبلا پیدا کرده‌اید');

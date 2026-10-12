@@ -17,7 +17,10 @@
     try { return JSON.parse(raw); } catch (e) { return fallback; }
   }
 
+  var cache = null; // parsed kalamchin.levels
+
   function write(key, value) {
+    if (key === 'levels') cache = value;
     var raw = JSON.stringify(value);
     memory[key] = raw;
     try { root.localStorage.setItem(PREFIX + key, raw); } catch (e) { /* keep in memory */ }
@@ -42,7 +45,8 @@
   }
 
   var Store = {
-    levels: function () { return read('levels', null) || seedLevels(); },
+    // Parsed once and kept in memory: the level list is over a megabyte.
+    levels: function () { return cache || (cache = read('levels', null) || seedLevels()); },
 
     builtIn: function () { return Store.levels().levels; },
 

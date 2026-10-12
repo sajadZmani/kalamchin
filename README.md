@@ -4,7 +4,7 @@ A Persian word game for the browser, inspired by Amirza (آمیرزا). Made for
 
 Drag across the letters in the wheel to build words and fill the crossword. Real words that
 are not on the board count as extra words; collect enough of them for bonus coins. Coins buy
-hints. There are 1000 levels in 100 chapters, and you can make your own levels.
+hints. There are 3100 levels (from `levels.txt`) in 310 chapters, and you can make your own levels.
 
 ## Play
 
@@ -40,39 +40,43 @@ so every friend has their own progress.
 | `js/config.js` | prices, rewards, chapters and colours |
 | `js/lock.js` | passcode screen |
 | `editor.html`, `js/editor.js` | make, export and import your own levels |
-| `data/levels.js` | the 1000 built-in levels (generated) |
+| `levels.txt` | the level list: one line per level, words separated by `/` |
+| `data/levels.js` | the built-in levels with their boards (generated from `levels.txt`) |
 | `data/dict.js` | accepted words for extra words (generated) |
-| `tools/` | scripts that generate `data/`, word blocklists |
+| `tools/` | scripts that build `data/`, word blocklist |
 | `PLAN.md` | research notes and the build plan |
 
-## Regenerating the levels
+## Changing the levels
+
+Edit `levels.txt` (one line per level: `مرحله‌ی N`, a tab, then the words separated by `/`), then:
+
+```sh
+node tools/import_levels.js
+```
+
+It builds a crossword for every level, puts every letter the words need on the wheel, and adds the
+words to the extra-word dictionary. آ and ا count as the same letter. Typos and words typed
+together in the source list are fixed per level in `FIXES` at the top of `tools/import_levels.js`.
+Bump `LEVELS_VERSION` there whenever the levels change, so browsers that already played replace
+their stored copy (coins, current level and custom levels are kept).
+
+Words in `tools/blocked_words.txt` (swearing, sexual words, insults, drugs, alcohol) are dropped
+from the levels and never accepted as extra words; some players are kids.
+
+To rebuild the extra-word dictionary from scratch:
 
 ```sh
 pip download hazm wordfreq --no-deps -d wheels && pip install msgpack
 # unzip both wheels, then:
 python3 tools/extract_words.py hazm/data/words.dat wordfreq/data/small_fa.msgpack.gz wordlists.json
-node tools/generate_levels.js wordlists.json
+node tools/build_dict.js wordlists.json
+node tools/import_levels.js
 ```
-
-Levels 1–300 come from the first five tiers and 301–1000 from the mixed pools after them; the
-output is deterministic, so add new levels after the existing ones instead of changing earlier
-tiers (saved progress refers to level numbers). If you change the built-in levels, bump `LEVELS_VERSION` in `tools/generate_levels.js` so that
-browsers that already played replace their stored copy. Custom levels are kept.
-
-## Word lists (kid-friendly)
-
-- `tools/blocked_words.txt`: never accepted, not on the board and not as an extra word
-  (swearing, sexual words, insults, drugs, alcohol).
-- `tools/not_answers.txt`: accepted as extra words but never used on the board (names of people,
-  places and brands, plus grim words like اعدام).
-
-Every answer word in the 1000 levels was checked by hand. To remove a word, add it to one of the
-files and run the generator again: only the levels that used it are rebuilt, and in-progress
-saves on those levels drop the words that no longer exist.
 
 ## Credits
 
 - Word data: [hazm](https://github.com/roshan-research/hazm) (MIT) and
   [wordfreq](https://github.com/rspeer/wordfreq) (data CC-BY-SA 4.0).
 - Font: [Vazirmatn](https://github.com/rastikerdar/vazirmatn) (SIL OFL 1.1, see `fonts/OFL.txt`).
+- Level answers: the Amirza answer guide on [Digikala Mag](https://www.digikala.com/mag/complete-amirza-guide/).
 - Game idea: Amirza. This is an unofficial fan project and is not affiliated with it.

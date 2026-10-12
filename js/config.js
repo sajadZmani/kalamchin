@@ -62,7 +62,11 @@
     chapterOf: function (levelId) {
       if (levelId >= 10001) return CUSTOM_CHAPTER;
       var i = Math.floor((levelId - 1) / 10);
-      return CHAPTERS[i % CHAPTERS.length];
+      var ch = CHAPTERS[i % CHAPTERS.length];
+      if (i < CHAPTERS.length) return ch;
+      // After 100 chapters the cities come round again: «تهران ۲», «تهران ۳», ...
+      var round = Math.floor(i / CHAPTERS.length) + 1;
+      return { index: i, name: ch.name + ' ' + root.KConfig.fa(round), accent: ch.accent, bg1: ch.bg1, bg2: ch.bg2 };
     },
 
     fa: function (n) {
