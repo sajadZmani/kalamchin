@@ -8,14 +8,22 @@ hints. There are 300 levels in 30 chapters, and you can make your own levels.
 
 ## Play
 
-No build step. Either:
+Online (after GitHub Pages is on): **https://sajadzmani.github.io/Amirza/**
 
-- open `index.html` in a browser, or
-- serve the folder (`python3 -m http.server`) and open `http://localhost:8000`, or
-- host it for friends on GitHub Pages (Settings → Pages → deploy from branch → root).
+No build step. Locally, either open `index.html` in a browser or serve the folder
+(`python3 -m http.server`) and open `http://localhost:8000`.
 
 Everything (levels, current level, coins, progress) is saved in the browser's `localStorage`,
 so every friend has their own progress.
+
+### Hosting on GitHub Pages
+
+1. Pages on a free account needs a public repo: Settings → General → Danger Zone →
+   Change visibility → Public (or use GitHub Pro to keep it private).
+2. Settings → Pages → Build and deployment → Source: **Deploy from a branch**, pick the branch
+   with the game and the `/ (root)` folder, then Save.
+3. After a minute the game is live at `https://sajadzmani.github.io/Amirza/`. Every push to that
+   branch updates it. `.nojekyll` makes GitHub serve the files as they are.
 
 ## Files
 
